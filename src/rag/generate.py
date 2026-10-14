@@ -54,11 +54,14 @@ def answer(q: str, retriever: Retriever, reranker: Reranker) -> tuple[str, list[
     client = anthropic.Anthropic()
     msg = client.messages.create(
         model=MODEL,
-        max_tokens=500,
+        max_tokens=4000,
         system=SYSTEM,
         messages=[{"role": "user", "content": f"Sources:\n{context}\n\nQuestion: {q}"}],
     )
-    return msg.content[0].text, top
+    text = "".join(b.text for b in msg.content if b.type == "text")
+    if not text:
+        text = f"(no text returned, stop_reason={msg.stop_reason})"
+    return text, top
 
 
 if __name__ == "__main__":
