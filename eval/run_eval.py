@@ -15,12 +15,13 @@ def norm(s: str) -> str:
     return re.sub(r"\s+", " ", s.lower())
 
 
-def hit_rank(chunks: list[dict], evidence: list[str]) -> int:
-    ev = [norm(e) for e in evidence]
+def hit_rank(chunks: list[dict], q: dict) -> int:
+    options = [q["evidence"]] + q.get("alt", [])
     for i, c in enumerate(chunks):
         text = norm(c["text"])
-        if all(e in text for e in ev):
-            return i + 1
+        for opt in options:
+            if all(norm(e) in text for e in opt):
+                return i + 1
     return 0
 
 
@@ -38,7 +39,9 @@ def main() -> None:
     for name, fn in configs.items():
         ranks, start = [], time.time()
         for q in qs:
-            ranks.append(hit_rank(fn(q["question"], q["ticker"]), q["evidence"]))
+            ranks.append(hit_rank(fn(q["question"], q["ticker"]), q))
+        misses = [q["id"] for q, x in zip(qs, ranks) if x == 0]
+        print(f"{name} misses ({len(misses)}): {misses}")
         ms = (time.time() - start) * 1000 / len(qs)
         n = len(qs)
         rows.append((
