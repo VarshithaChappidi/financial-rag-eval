@@ -43,6 +43,24 @@ Each question in `eval/questions.jsonl` has an exact evidence phrase copied from
 
 **Eval correction:** the first run scored the reranker at Hit@5 0.94. Error analysis showed that for one question the reranker returned a regulatory capital table with the same figures, while my eval required a prose sentence. I added optional alternative evidence per question (`alt`) and re-scored all configurations on the same corrected set. One miss remains (`bac-min`); I have not yet diagnosed its cause.
 
+## Agent (LangGraph)
+A small analyst agent on top of the retriever. Flow: `guard` → `retrieve` → `draft` → `verify` → `approve`.
+
+- **Guard:** refuses investment-advice questions before any retrieval or model call.
+- **Retrieve:** the same hybrid retrieval + reranker as the evaluation, with company detection.
+- **Draft:** Claude answers with citations and must call a calculator tool for any arithmetic. The calculator evaluates only numbers and `+ - * / **` (no code execution, exponent capped).
+- **Verify:** every number in the draft must appear in the retrieved sources or match a calculator result. Unsupported numbers trigger one retry with feedback; if they persist, the answer is flagged `unverified`.
+- **Approve:** human approval gate (CLI) before the answer is final.
+- **Trace:** each step is appended to `data/agent_trace.jsonl`.
+
+```bash
+uv run python -m agent.graph "By how many dollars did Morgan Stanley's net revenues grow in 2025?"
+```
+
+Tests (`uv run pytest`) cover the calculator, the verifier, refusal, retry, flagged answers, and human rejection, with the model mocked so they run without an API key.
+
+**Agent limitations:** verification checks that numbers appear in the sources, not that the claim around them is correct, and it can flag harmless numbers. There is no multi-turn memory, and answer quality depends on the model and on retrieval.
+
 ## Limitations
 - The eval measures retrieval only, not answer faithfulness.
 - 34 questions is a small sample, and one question is about 3 points.
