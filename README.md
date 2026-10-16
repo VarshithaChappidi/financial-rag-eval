@@ -1,5 +1,7 @@
 # financial-rag-eval
+
 ![tests](https://github.com/VarshithaChappidi/financial-rag-eval/actions/workflows/tests.yml/badge.svg)
+
 Retrieval-augmented question answering over the FY2025 10-K filings of five large US banks (JPM, BAC, MS, GS, C), with a reproducible retrieval evaluation that compares five configurations.
 
 ## Why this exists
