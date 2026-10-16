@@ -35,7 +35,10 @@ def calculate(expression: str) -> float:
         if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
             return node.value
         if isinstance(node, ast.BinOp) and type(node.op) in _OPS:
-            return _OPS[type(node.op)](ev(node.left), ev(node.right))
+            left, right = ev(node.left), ev(node.right)
+            if isinstance(node.op, ast.Pow) and abs(right) > 100:
+                raise ValueError("Exponent too large")
+            return _OPS[type(node.op)](left, right)
         if isinstance(node, ast.UnaryOp) and type(node.op) in _OPS:
             return _OPS[type(node.op)](ev(node.operand))
         raise ValueError(f"Unsupported expression: {expression}")

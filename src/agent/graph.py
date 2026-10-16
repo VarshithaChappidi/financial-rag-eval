@@ -108,7 +108,7 @@ def draft(state: State) -> dict:
     return {"answer": text, "calcs": state.get("calcs", []) + calcs, "attempts": attempts}
 
 
-NUM = re.compile(r"\d[\d,]*\.?\d*")
+NUM = re.compile(r"(?<![A-Za-z\d.])\d[\d,]*\.?\d*")
 
 
 def verify(state: State) -> dict:
