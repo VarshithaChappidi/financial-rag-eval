@@ -2,7 +2,7 @@
 
 ![tests](https://github.com/VarshithaChappidi/financial-rag-eval/actions/workflows/tests.yml/badge.svg)
 
-Retrieval-augmented question answering over the FY2025 10-K filings of five large US banks (JPM, BAC, MS, GS, C), with a reproducible retrieval evaluation that compares five configurations.
+Retrieval-augmented question answering over FY2025 SEC 10-K filings of five large U.S. banks (JPM, BAC, MS, GS, C), with a reproducible retrieval evaluation comparing five configurations. The reported ingestion run processes 6,549 text and table chunks.
 
 ## Why this exists
 Financial filings are long, repetitive across companies, and full of tables. A plain vector search often returns a plausible passage from the wrong section or the wrong bank. This repo measures where retrieval fails and what each component buys.
@@ -25,7 +25,7 @@ flowchart LR
 
 ## Results (34 questions, retrieval only)
 | Config | Hit@1 | Hit@5 | MRR@5 | Avg latency |
-|---|---|---|---|---|
+|---|---:|---:|---:|---:|
 | dense only | 0.50 | 0.82 | 0.62 | 23 ms |
 | BM25 only | 0.29 | 0.76 | 0.47 | 37 ms |
 | hybrid (RRF) | 0.56 | 0.82 | 0.66 | 68 ms |
@@ -59,7 +59,7 @@ A small analyst agent on top of the retriever. Flow: `guard` → `retrieve` → 
 uv run python -m agent.graph "By how many dollars did Morgan Stanley's net revenues grow in 2025?"
 ```
 
-Tests (`uv run pytest`) cover the calculator, the verifier, refusal, retry, flagged answers, and human rejection, with the model mocked so they run without an API key.
+The repository includes **14 automated pytest cases** covering calculator behavior and unsafe expressions, numeric verification, refusal paths, successful answers, retry behavior, persistent verification failures, and human rejection. GitHub Actions runs the suite on pushes to `main` and pull requests. The model is mocked in tests, so the suite runs without an API key.
 
 **Agent limitations:** verification checks that numbers appear in the sources, not that the claim around them is correct, and it can flag harmless numbers. There is no multi-turn memory, and answer quality depends on the model and on retrieval.
 
