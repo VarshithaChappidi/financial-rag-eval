@@ -94,3 +94,7 @@ uv run python -m rag.generate "What was Goldman Sachs CET1 capital ratio?"
 - Numeric tool for table questions
 - Answer faithfulness evaluation
 - Eval-gated CI
+
+## Portfolio
+
+Explore my AI engineering experience, projects, and publication on my [live portfolio](https://varshithaportfolio-ai-engineer.vercel.app).
